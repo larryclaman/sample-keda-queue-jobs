@@ -12,12 +12,11 @@ See [script-job.sh] and [azurequeue_scaledobject_jobs.yaml]
 
 Note:  Be sure to delete the cluster from sample 1, or at least the keda scaled object so that the two jobs dont compete (they use the same queue)
 
-see [script-job-deallocate.sh]  and [azurequeue_scaledobject_jobs.yaml]
-
+see [script-job-deallocate.sh](script-job-deallocate.sh)  and [azurequeue_scaledobject_jobs.yaml](azurequeue_scaledobject_jobs.yaml)
 
 
 ## Sample #3 - Windows nodes, managed disks with deallocate scaledown, workloads scheduled as jobs
 
-see [./script-windows.sh]  and [azurequeue_scaledobject_jobs_windows.yaml]
+see [script-windows.sh](script-windows.sh) and [azurequeue_scaledobject_jobs_windows.yaml](azurequeue_scaledobject_jobs_windows.yaml) 
 
 

@@ -7,8 +7,8 @@ spec:
   #scaleType: job
   pollingInterval: 30
   maxReplicaCount: 50
-  successfulJobsHistoryLimit: 10
-  failedJobsHistoryLimit: 10
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
   jobTargetRef:
     parallelism: 1
     completions: 1
@@ -20,7 +20,7 @@ spec:
           kubernetes.io/os: windows
         containers:
         - name: consumer-job
-          image: lncacr01.azurecr.io/queue-consumer-windows
+          image: $ACR.azurecr.io/queue-consumer-windows
           resources:
             requests:
               cpu: 100m
@@ -40,5 +40,5 @@ spec:
   - type: azure-queue
     metadata:
       queueName: keda-queue
-      queueLength: '10'
+      queueLength: '1'
       connectionFromEnv: AzureWebJobsStorage

@@ -54,7 +54,8 @@ az aks update -n $CLUSTER_NAME -g $RG  --attach-acr $ACR
 az acr build -r $ACR -t $ACR.azurecr.io/queue-consumer-windows  --platform windows queue-consumer-windows
 
 # Load the KEDA job
-kubectl apply -f azurequeue_scaledobject_jobs_windows.yaml
+export ACR
+cat azurequeue_scaledobject_jobs_windows.yaml| envsubst | kubectl apply -f -
 
 #############
 # Now run the python app to load up the queue
@@ -66,36 +67,6 @@ export AzureWebJobsStorage=$AZURE_STORAGE_CONNECTION_STRING
 
 # run this repeatedly to load the queue
 python send_messages.py 100
-
-
-
-
-
-
-
-
-
-export QUEUE_NAME=keda-queue
-#az group create -l $LOCATION -n $RG
-#az storage account create -g $RG -n $STORAGE_ACCOUNT_NAME
-export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string --name $STORAGE_ACCOUNT_NAME --query connectionString -o tsv)
-az storage queue create -n $QUEUE_NAME
-
-kubectl create secret generic secrets \
-    --from-literal=AzureWebJobsStorage=$AZURE_STORAGE_CONNECTION_STRING
-kubectl apply -f azurequeue_scaledobject_jobs.yaml
-
-python send_messages.py 100
-
-
-###########################
-#windows 
-cd queue-consumer-windows
-ACR=lncacr01
-az acr create -n $ACR -g $RG --sku Standard
-az aks update -n $CLUSTER_NAME -g $RG  --attach-acr $ACR
-az acr build -r $ACR -t $ACR.azurecr.io/queue-consumer-windows  --platform windows .
-
 
 
 
