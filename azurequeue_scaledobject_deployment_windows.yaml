@@ -1,0 +1,57 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: azure-queue-scaledobject-deployment-win
+  namespace: default
+spec:
+  pollingInterval: 30
+  minReplicaCount: 0
+  maxReplicaCount: 50
+  scaleTargetRef:
+    name: azure-queue-dequeuer-win
+    kind: Deployment
+  triggers:
+  - type: azure-queue
+    metadata:
+      queueName: keda-queue
+      queueLength: '1'  # eg, one pod can handle 1 message
+      connectionFromEnv: AzureWebJobsStorage
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azure-queue-dequeuer-win
+  labels:
+    app: dequeuer-win
+spec:
+  #replicas: 2
+  selector:
+    matchLabels:
+      app: dequeuer-win
+  template:
+    metadata:
+      labels:
+        app: dequeuer-win
+    spec:
+      nodeSelector:
+          kubernetes.io/os: windows
+      containers:
+        - name: consumer
+          image: $ACR.azurecr.io/queue-consumer-windows
+          #ports:
+          #  - containerPort: 80
+          resources:
+            requests:
+              cpu: 100m
+              memory: 3000Mi
+            limits:
+              cpu: 100m
+              memory: 3000Mi
+          env:
+              - name: AzureWebJobsStorage
+                valueFrom:
+                  secretKeyRef:
+                    name: secrets
+                    key: AzureWebJobsStorage
+              - name: QUEUE_NAME
+                value: keda-queue

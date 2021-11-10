@@ -47,7 +47,7 @@ kubectl create secret generic secrets \
 ####
 # build windows container
 #windows 
-ACR=lncacr01  # must be unique
+export ACR=lncacr01  # must be unique
 az acr create -n $ACR -g $RG --sku Standard
 az aks update -n $CLUSTER_NAME -g $RG  --attach-acr $ACR
 
