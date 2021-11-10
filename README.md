@@ -1,7 +1,7 @@
 # KEDA jobs with Azure Storage Queues
 ### based on https://github.com/tomconte/sample-keda-queue-jobs but substantially modified
 
-These samples show how to use [KEDA](https://github.com/kedacore/keda) to automatically schedule Kubernetes workloads based on an Azure Storage Queue trigger.
+These samples show how to use [KEDA](https://github.com/kedacore/keda) to automatically schedule Kubernetes workloads based on an Azure Storage Queue trigger.  Addtionally (optionally), you can use KEDA scaling to trigger the cluster autoscaler.
 
 ## Sample #1 - Linux nodes, ephemeral disks, workloads scheduled as  jobs
 This sample creates an AKS cluster with an ephemeral-disk linux node pool.
