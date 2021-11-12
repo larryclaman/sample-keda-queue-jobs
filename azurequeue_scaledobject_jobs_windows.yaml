@@ -23,7 +23,7 @@ spec:
           kubernetes.io/os: windows
         containers:
         - name: consumer-job
-          image: $ACR.azurecr.io/queue-consumer-windows:3
+          image: $ACR.azurecr.io/queue-consumer-windows:4
           resources:
             requests:
               cpu: 100m
