@@ -12,15 +12,18 @@ spec:
   jobTargetRef:
     parallelism: 1
     completions: 1
-    activeDeadlineSeconds: 600
+    activeDeadlineSeconds:  $DEADLINE # default: 600
     backoffLimit: 6
     template:
+      metadata:
+        annotations:
+          "cluster-autoscaler.kubernetes.io/scale-down-disabled": "true"
       spec:
         nodeSelector:
           kubernetes.io/os: windows
         containers:
         - name: consumer-job
-          image: $ACR.azurecr.io/queue-consumer-windows
+          image: $ACR.azurecr.io/queue-consumer-windows:3
           resources:
             requests:
               cpu: 100m
@@ -36,6 +39,8 @@ spec:
                 key: AzureWebJobsStorage
           - name: QUEUE_NAME
             value: keda-queue
+          - name: WorkTime
+            value: '$WORKTIME'
   triggers:
   - type: azure-queue
     metadata:

@@ -9,6 +9,11 @@ except KeyError:
   print('Error: missing environment variable AzureWebJobsStorage or QUEUE_NAME')
   exit(1)
 
+try:
+  work_time = int(os.environ['WorkTime'])
+except:
+  work_time = 30
+
 queue = QueueClient.from_connection_string(conn_str=connection_string, queue_name=queue_name)
 
 # Get a single message
@@ -21,4 +26,4 @@ print(message)
 queue.delete_message(message)
 
 # Sleep for a while, simulating a long-running job
-time.sleep(30)
+time.sleep(work_time)
