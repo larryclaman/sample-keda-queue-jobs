@@ -16,8 +16,19 @@ except:
 
 queue = QueueClient.from_connection_string(conn_str=connection_string, queue_name=queue_name)
 
+
 # Get a single message
-message = next(queue.receive_messages())
+try:
+  message = next(queue.receive_messages())
+except:
+  props = queue.get_queue_properties()
+  if (props.approximate_message_count == 0):
+    print("queue empty")
+    exit(0)
+  else:
+    print("error")
+    exit(1)
+
 
 # Print the message
 print(message)

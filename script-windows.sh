@@ -51,7 +51,7 @@ export ACR=lncacr01  # must be unique
 az acr create -n $ACR -g $RG --sku Standard
 az aks update -n $CLUSTER_NAME -g $RG  --attach-acr $ACR
 
-az acr build -r $ACR -t $ACR.azurecr.io/queue-consumer-windows:3  --platform windows queue-consumer-windows
+az acr build -r $ACR -t $ACR.azurecr.io/queue-consumer-windows:4  --platform windows queue-consumer-windows
 
 # Load the KEDA job
 
@@ -74,7 +74,7 @@ python send_messages.py 100
 
 #########################
 export WORKTIME=1800 # 60 * 30 = 1800 seconds = 30 min
-((DEADLINE=$WORKTIME+300))
+((DEADLINE=$WORKTIME+3600))
 export DEADLINE
 cat azurequeue_scaledobject_jobs_windows.yaml| envsubst | kubectl apply -f -
 python send_messages.py 4
