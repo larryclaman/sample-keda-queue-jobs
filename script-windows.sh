@@ -51,11 +51,10 @@ export ACR=lncacr01  # must be unique
 az acr create -n $ACR -g $RG --sku Standard
 az aks update -n $CLUSTER_NAME -g $RG  --attach-acr $ACR
 
-az acr build -r $ACR -t $ACR.azurecr.io/queue-consumer-windows  --platform windows queue-consumer-windows
+az acr build -r $ACR -t $ACR.azurecr.io/queue-consumer-windows:4  --platform windows queue-consumer-windows
 
 # Load the KEDA job
-export ACR
-cat azurequeue_scaledobject_jobs_windows.yaml| envsubst | kubectl apply -f -
+
 
 #############
 # Now run the python app to load up the queue
@@ -65,8 +64,17 @@ pip install -r requirements.txt
 
 export AzureWebJobsStorage=$AZURE_STORAGE_CONNECTION_STRING
 
+export WORKTIME=5 # 5 seconds
+((DEADLINE=$WORKTIME+300))
+export DEADLINE
+cat azurequeue_scaledobject_jobs_windows.yaml| envsubst | kubectl apply -f -
+
 # run this repeatedly to load the queue
 python send_messages.py 100
 
-
-
+#########################
+export WORKTIME=1800 # 60 * 30 = 1800 seconds = 30 min
+((DEADLINE=$WORKTIME+3600))
+export DEADLINE
+cat azurequeue_scaledobject_jobs_windows.yaml| envsubst | kubectl apply -f -
+python send_messages.py 4
