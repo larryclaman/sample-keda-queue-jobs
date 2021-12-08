@@ -12,11 +12,12 @@ az storage account create -g $RG -n $STORAGE_ACCOUNT_NAME
 export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string --name $STORAGE_ACCOUNT_NAME --query connectionString -o tsv)
 az storage queue create -n $QUEUE_NAME
 
-CLUSTER_NAME="keda2-w"
+CLUSTER_NAME="keda3"
 
 az aks create \
  -g $RG \
  -n $CLUSTER_NAME \
+ --kubernetes-version 1.21.2 \
  --node-count 1 \
  --node-vm-size Standard_DS3_v2 \
  --generate-ssh-keys \
@@ -78,3 +79,26 @@ export WORKTIME=1800 # 60 * 30 = 1800 seconds = 30 min
 export DEADLINE
 cat azurequeue_scaledobject_jobs_windows.yaml| envsubst | kubectl apply -f -
 python send_messages.py 4
+
+
+####
+#####
+# Deployments ####
+##########
+
+export ACR=lncacr01  # must be unique
+az acr create -n $ACR -g $RG --sku Standard
+az aks update -n $CLUSTER_NAME -g $RG  --attach-acr $ACR
+
+export TAG=7
+
+az acr build -r $ACR -t $ACR.azurecr.io/queue-consumer-ongoing:$TAG  queue-consumer-ongoing
+
+
+export WORKTIME=1800 # 60 * 30 = 1800 seconds = 30 min
+((DEADLINE=$WORKTIME+3600))
+export DEADLINE
+cat azurequeue_scaledobject_deployment.yaml| envsubst | kubectl apply -f -
+python send_messages.py 4
+
+kubectl logs -f -l app=dequeuer --all-containers=true --prefix=true

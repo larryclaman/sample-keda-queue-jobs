@@ -17,7 +17,7 @@ spec:
     template:
       metadata:
         labels:
-          app: winworkerxxxx
+          app: winworkerjob
         annotations:
           "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
       spec:
@@ -58,4 +58,4 @@ spec:
   minAvailable: 50
   selector:
     matchLabels:
-      app: winworker
+      app: winworkerjob
